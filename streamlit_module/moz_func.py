@@ -871,11 +871,25 @@ def read_file_content(file):
         content = read_file_content_from_path(file)
         content = unify_timestamps(content)
         #content_for_tab = unify_timestamps(content)
+        #★
+        content= re.sub(
+            r'(^|\s)(\d):(\d{2}:\d{2}[,.]\d{3})',
+            lambda m: f"{m.group(1)}0{m.group(2)}:{m.group(3)}",
+            content,
+            flags=re.MULTILINE
+        )
         content = f"""<pre style="white-space: pre-wrap; overflow-y: auto; height: 100px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content}</pre>"""
         #content_for_tab =f"""<p style="margin-top:20px;font-size:20px;margin-left:7%;font-weight:bold;color:orange;">★ {os.path.basename(file)}</p><pre style="margin-bottom:30px;margin-left:8%;margin-right:8%; white-space: pre-wrap;overflow-y: auto; height: 200px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content_for_tab}</pre>"""
     elif file_extension == '.vtt':
         content = read_file_content_from_path(file)
         content = unify_timestamps_vtt(content)
+        #★
+        content= re.sub(
+            r'(^|\s)(\d):(\d{2}:\d{2}[,.]\d{3})',
+            lambda m: f"{m.group(1)}0{m.group(2)}:{m.group(3)}",
+            content,
+            flags=re.MULTILINE
+        )
         #content_for_tab = unify_timestamps(content)
         content = f"""<pre style="white-space: pre-wrap; overflow-y: auto; height: 100px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content}</pre>"""
         #content_for_tab =f"""<p style="margin-top:20px;font-size:20px;margin-left:7%;font-weight:bold;color:orange;">★ {os.path.basename(file)}</p><pre style="margin-bottom:30px;margin-left:8%;margin-right:8%; white-space: pre-wrap;overflow-y: auto; height: 200px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content_for_tab}</pre>"""
@@ -960,7 +974,7 @@ def save_translated_content(file, translated_text):
     os.makedirs(temp_dir, exist_ok=True)
     lang_tail=co.extract_short_name(st.session_state.language_result)
     output_file_path = os.path.join(temp_dir, f"{file_name}_{lang_tail}{file_extension}")
-
+    #★
     '''if file_extension == '.docx':
         doc = Document()
         doc.add_paragraph(translated_text)
@@ -994,7 +1008,8 @@ def save_translated_content(file, translated_text):
             for pattern, replacement in patterns_replacements:
                 content = re.sub(pattern, replacement, content)
             
-
+            # 秒の2桁＋3桁のミリ秒の間にカンマを追加する
+            content = re.sub(r'(\d{2}:\d{2}:\d{2})(\d{3})', r'\1,\2', content)  
             pattern = re.compile(r'(\d{1,4})\^*(\d{2}:\d{2}:\d{2},\d{3}\^*-->\^*\d{2}:\d{2}:\d{2},\d{3})')
 
         elif file_extension == '.vtt':
@@ -1007,13 +1022,16 @@ def save_translated_content(file, translated_text):
             ]
             for pattern, replacement in patterns_replacements:
                 content = re.sub(pattern, replacement, content)
-
-            
-            pattern = re.compile(r'(\d{1,4})\^*(\d{1}:\d{2}:\d{2}\.\d{3}\^*-->\^*\d{1}:\d{2}:\d{2}\.\d{3})')
+            # 秒の2桁＋3桁のミリ秒の間にカンマを追加する
+            content = re.sub(r'(\d{2}:\d{2}:\d{2})(\d{3})', r'\1.\2', content)  
+            pattern = re.compile(r'(\d{1,4})\^*(\d{2}:\d{2}:\d{2}\.\d{3}\^*-->\^*\d{2}:\d{2}:\d{2}\.\d{3})')
+        # カンマが抜けたタイムスタンプ (例: 00:00:00123) を修正
         
+
+              
         matches = pattern.findall(content)        
         if not matches:
-            pattern =  re.compile(r'(\d{1,4})\^*(\d{2}:\d{2}:\d{2}\.\d{3}\^*-->\^*\d{2}:\d{2}:\d{2}\.\d{3})')
+            pattern =  re.compile(r'(\d{1,4})\^*(\d{1}:\d{2}:\d{2}\.\d{3}\^*-->\^*\d{1}:\d{2}:\d{2}\.\d{3})')
             matches = pattern.findall(content)
 
         if not matches:
