@@ -869,27 +869,31 @@ def read_file_content(file):
         #content_for_tab =f"""<p style="margin-top:20px;font-size:20px;margin-left:7%;font-weight:bold;color:orange;">★ {os.path.basename(file)}</p><pre style="margin-bottom:30px;margin-left:8%;margin-right:8%; white-space: pre-wrap;overflow-y: auto; height: 200px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content_for_tab}</pre>"""
     elif file_extension == '.srt':
         content = read_file_content_from_path(file)
-        content = unify_timestamps(content)
+        
         #content_for_tab = unify_timestamps(content)
         #★
+        content = unify_timestamps(content)
         content= re.sub(
             r'(^|\s)(\d):(\d{2}:\d{2}[,.]\d{3})',
             lambda m: f"{m.group(1)}0{m.group(2)}:{m.group(3)}",
             content,
             flags=re.MULTILINE
         )
+        content = unify_timestamps(content) #二重に。
         content = f"""<pre style="white-space: pre-wrap; overflow-y: auto; height: 100px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content}</pre>"""
         #content_for_tab =f"""<p style="margin-top:20px;font-size:20px;margin-left:7%;font-weight:bold;color:orange;">★ {os.path.basename(file)}</p><pre style="margin-bottom:30px;margin-left:8%;margin-right:8%; white-space: pre-wrap;overflow-y: auto; height: 200px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content_for_tab}</pre>"""
     elif file_extension == '.vtt':
         content = read_file_content_from_path(file)
         content = unify_timestamps_vtt(content)
         #★
+        content = unify_timestamps(content)
         content= re.sub(
             r'(^|\s)(\d):(\d{2}:\d{2}[,.]\d{3})',
             lambda m: f"{m.group(1)}0{m.group(2)}:{m.group(3)}",
             content,
             flags=re.MULTILINE
         )
+        content = unify_timestamps(content)#二重に
         #content_for_tab = unify_timestamps(content)
         content = f"""<pre style="white-space: pre-wrap; overflow-y: auto; height: 100px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content}</pre>"""
         #content_for_tab =f"""<p style="margin-top:20px;font-size:20px;margin-left:7%;font-weight:bold;color:orange;">★ {os.path.basename(file)}</p><pre style="margin-bottom:30px;margin-left:8%;margin-right:8%; white-space: pre-wrap;overflow-y: auto; height: 200px; word-wrap: break-word; padding: 10px; font-family: inherit; font-size: inherit;">{content_for_tab}</pre>"""
